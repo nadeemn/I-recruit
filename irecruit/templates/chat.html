@@ -19,10 +19,6 @@
     <title>I-Recruit</title>
 </head>
 <body>
-
-
-
-
 <div id="frame">
 	<div id="sidepanel">
 		<div id="profile">
@@ -55,26 +51,30 @@
 		</div>
 	</div>
 </div>
+
+</div>
+
     <div class="modal fade" id="exampleModalCenter" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
-  <div class="modal-dialog modal-dialog-centered" role="document">
+  <div class="modal-dialog modal-dialog-centered" role="document" style="left: 0">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title" id="exampleModalCenterTitle">Modal title</h5>
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+        <h5 class="modal-title" id="exampleModalCenterTitle">Your Session Is Expired!</h5>
           <span aria-hidden="true">&times;</span>
         </button>
       </div>
       <div class="modal-body">
-        ...
+        Thankyou for using our system.Your results will be calculated and will be informed soon.
       </div>
       <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-        <button type="button" class="btn btn-primary">Save changes</button>
+        <button type="button" class="btn btn-primary">Exit</button>
       </div>
     </div>
   </div>
 </div>
-</div>
+
+
+
+
 
 <script src='//production-assets.codepen.io/assets/common/stopExecutionOnTimeout-b2a7b3fe212eaa732349046d8416e00a9dec26eb7fd347590fbced3ab38af52e.js'></script>
     <script>
@@ -111,32 +111,52 @@ $(".expand-button").click(function() {
 	$("#contacts").toggleClass("expanded");
 });
 
-
+var i;
 
 function newMessage() {
+
 	message = $(".message-input input").val();
 	if($.trim(message) == '') {
 		return false;
 	}
-	$('<li class="replies"><img src="http://emilcarlsson.se/assets/harveyspecter.png" alt="" /><p>' + message + '</p></li>').appendTo($('.messages ul'));
+	$('<li class="replies"><img src="http://emilcarlsson.se/assets/mikeross.png" alt="" /><p>' + message + '</p></li>').appendTo($('.messages ul'));
 	 $('.message-input input').val(null);
 	 $('.contact.active .preview').html('<span>You: </span>' + message);
 	$(".messages").animate({ scrollTop: $(document).height() }, "slow");
 
+	if (i === 1){
+	     i = 1;
+    }
+    else{ i = 0; }
 
 	$.getJSON('/chat_retrieval',{
-	    answer: message
-    },function (data) {
-        reply = data.result+" ?";
+            answer: message,
+            count: i,
 
-       $('<li id = "reply" class="sent"><img src="http://emilcarlsson.se/assets/harveyspecter.png" alt="" /><p>'+ reply + '</p></li>').appendTo($('.messages ul'));
+    },function (data) {
+        reply = data.result[0]+" ?";
+        counting = data.result[1];
+        i = counting;
+
+       $('<li id = "reply" class="sent"><img src="http://emilcarlsson.se/assets/mikeross.png" alt="" /><p>'+ reply + '</p></li>').appendTo($('.messages ul'));
 
 	 $('.contact.active .preview').html('<span>You: </span>' + reply);
 	$(".messages").animate({ scrollTop: $(document).height() }, "slow");
     });
 
+
+
 };
 
+$.getJSON('/video_feed',{
+    error: 0,
+}, function (output) {
+    rslt = output.count
+
+    if (rslt == 0 ){
+        $('#exampleModalCenter').modal('show');
+    }
+});
 
 
 $('.submit').click(function() {
@@ -173,18 +193,14 @@ function startTimer(duration, display) {
         if (--timer < 0) {
             document.getElementById("input").disabled = true;
             $('#exampleModalCenter').modal('show');
-            setTimeout(function() {
-    $('#exampleModalCenter').modal('hide');
-}, 5000);
             timer = 0;
         }
     }, 1000);
 }
 window.onload = function () {
-        var fiveMinutes = 60 * 5,
+        var fiveMinutes = 60*15,
         display = document.querySelector('#future_date');
         document.getElementById('countdowntimer').style.color = "blue";
-
         startTimer(fiveMinutes, display);
 };
 //# sourceURL=pen.js

@@ -23,6 +23,7 @@ Labels = np.asarray(Labels, dtype=np.int32)
 
 model = cv2.face.LBPHFaceRecognizer_create()
 
+
 model.train(np.asarray(Training_Data), np.asarray(Labels))
 
 print("Model Training Complete")
@@ -74,6 +75,7 @@ class VideoCamera(object):
 
                 face = cv2.cvtColor(face, cv2.COLOR_BGR2GRAY)
                 result = model.predict(face)
+                count = 0
 
                 if result[1] < 500:
                     confidence = int(100 * (1 - (result[1]) / 300))
@@ -82,10 +84,11 @@ class VideoCamera(object):
 
                 # FACE CHECKING
                 if confidence > 87:
+                    count = 1
                     ret, jpeg = cv2.imencode('.jpg',
                                              cv2.putText(image, "Unlocked", (250, 450), cv2.FONT_HERSHEY_COMPLEX, 1,
                                                          (0, 255, 0), 2))
-                    return jpeg.tobytes()
+                    return jpeg.tobytes(), count
 
                     # cv2.putText(image, "Unlocked", (250, 450), cv2.FONT_HERSHEY_COMPLEX, 1, (0, 255, 0), 2)
                     # cv2.imshow('Face Cropper', image)
@@ -94,9 +97,7 @@ class VideoCamera(object):
                     ret, jpeg = cv2.imencode('.jpg',
                                              cv2.putText(image, "Locked", (250, 450), cv2.FONT_HERSHEY_COMPLEX, 1,
                                                          (0, 0, 255), 2))
-
-                    #return render_template("index.html", val=confidence)
-                    return jpeg.tobytes()
+                    return jpeg.tobytes(), count
 
                     # cv2.putText(image, "Locked", (250, 450), cv2.FONT_HERSHEY_COMPLEX, 1, (0, 0, 255), 2)
                     # cv2.imshow('Face Cropper', image)'''
